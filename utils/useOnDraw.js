@@ -31,7 +31,15 @@ export default function useOnDraw(onDraw) {
     function initMouseMoveListener() {
       const mouseMoveListener = (e) => {
         if (isDrawingRef.current && canvasRef.current) {
-          const point = computePointInCanvas(e.clientX, e.clientY);
+          let point;
+          if (e.type === "mousemove") {
+            point = computePointInCanvas(e.clientX, e.clientY);
+          } else if (e.type === "touchmove") {
+            point = computePointInCanvas(
+              e.touches[0].clientX,
+              e.touches[0].clientY
+            );
+          }
           const ctx = canvasRef.current.getContext("2d");
           if (onDraw) onDraw(ctx, point, prevPointRef.current);
           prevPointRef.current = point;
@@ -39,6 +47,7 @@ export default function useOnDraw(onDraw) {
       };
       mouseMoveListenerRef.current = mouseMoveListener;
       window.addEventListener("mousemove", mouseMoveListener);
+      window.addEventListener("touchmove", mouseMoveListener);
     }
 
     function initMouseUpListener() {
@@ -48,14 +57,17 @@ export default function useOnDraw(onDraw) {
       };
       mouseUpListenerRef.current = listener;
       window.addEventListener("mouseup", listener);
+      window.addEventListener("touchend", listener);
     }
 
     function cleanup() {
       if (mouseMoveListenerRef.current) {
+        window.removeEventListener("touchmove", mouseMoveListenerRef.current);
         window.removeEventListener("mousemove", mouseMoveListenerRef.current);
       }
       if (mouseUpListenerRef.current) {
         window.removeEventListener("mouseup", mouseUpListenerRef.current);
+        window.removeEventListener("touchend", mouseUpListenerRef.current);
       }
     }
 

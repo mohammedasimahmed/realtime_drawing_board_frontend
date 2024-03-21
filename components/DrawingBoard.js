@@ -30,6 +30,7 @@ const DrawingBoard = ({ socket, height, width }) => {
   return (
     <canvas
       onMouseDown={onCanvasMouseDown}
+      onTouchStart={onCanvasMouseDown}
       ref={setCanvasRef}
       width={width}
       height={height}

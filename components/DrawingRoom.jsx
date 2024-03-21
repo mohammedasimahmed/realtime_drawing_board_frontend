@@ -43,14 +43,14 @@ const DrawingRoom = ({ roomid }) => {
   return (
     <>
       <div className="text-white w-screen h-screen flex flex-col justify-center">
-        <div className="h-full md:h-4/5 p-6 w-screen md:w-screen flex flex-col md:flex-row  justify-around items-center">
+        <div className="h-full md:h-4/5 p-6 pb-0 w-screen md:w-screen flex flex-col justify-between items-center md:flex-row  md:justify-around md:items-center">
           <div
             ref={boardParent}
             className="h-2/3 w-full md:h-full xl:w-[800px] lg:w-[700px] md:w-[520px]"
           >
             <DrawingBoard socket={socket} height={height} width={width} />
           </div>
-          <div className="h-1/3 md:h-full flex flex-col w-full mt-2 md:mt-0 md:p-0 xl:w-[400px] lg:w-[320px] md:w-[250px]">
+          <div className="h-1/4 md:h-full flex flex-col w-full mt-2 md:mt-0 md:p-0 xl:w-[400px] lg:w-[320px] md:w-[250px]">
             <div className="w-full p-1 bg-green-900 text-white text-center text-xl font-semibold">
               Live Chat
             </div>
@@ -76,15 +76,15 @@ const DrawingRoom = ({ roomid }) => {
               />
             </form>
           </div>
+          <div className="w-screen bg-cyan-950 flex justify-center md:fixed md:bottom-0">
+            <button
+              className="text-white bg-red-700 text-xl p-2 rounded"
+              onClick={() => router.push("/")}
+            >
+              Leave Room
+            </button>
+          </div>
         </div>
-      </div>
-      <div className="w-screen bg-cyan-950 flex justify-center md:fixed md:bottom-0">
-        <button
-          className="text-white bg-red-700 text-xl p-2 rounded"
-          onClick={() => router.push("/")}
-        >
-          Leave Room
-        </button>
       </div>
     </>
   );
