@@ -2,13 +2,16 @@
 import DrawingBoard from "./DrawingBoard";
 import socketInitialize from "@/utils/socketInitialize";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const DrawingRoom = ({ roomid }) => {
   const [socket, setSocket] = useState(socketInitialize());
   const [chat, setChat] = useState([]);
   const [value, setValue] = useState("");
   const router = useRouter();
+  const boardParent = useRef(null);
+  const [height, setHeight] = useState(0);
+  const [width, setWidth] = useState(0);
 
   const handleChats = (e) => {
     e.preventDefault();
@@ -16,18 +19,36 @@ const DrawingRoom = ({ roomid }) => {
     socket.emit("send_text", value);
     setValue("");
   };
+
+  function handleResize() {
+    if (boardParent.current) {
+      setHeight(boardParent.current.offsetHeight);
+      setWidth(boardParent.current.offsetWidth);
+    }
+  }
+
   useEffect(() => {
     socket.emit("join_room", roomid);
     socket.on("receive_text", (txt) => {
       setChat((prevChats) => [...prevChats, txt]);
     });
+    if (boardParent.current) {
+      setHeight(boardParent.current.offsetHeight);
+      setWidth(boardParent.current.offsetWidth);
+    }
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
+
   return (
     <>
-      <div className="text-white w-screen h-screen flex flex-col justify-center p-3">
-        <div className="h-full md:h-4/5 w-fit md:w-screen flex flex-col md:flex-row  justify-around items-center ">
-          <div className="h-2/3 w-full md:h-full xl:w-[800px] lg:w-[700px] md:w-[520px]">
-            <DrawingBoard socket={socket} />
+      <div className="text-white w-screen h-screen flex flex-col justify-center">
+        <div className="h-full md:h-4/5 p-6 w-screen md:w-screen flex flex-col md:flex-row  justify-around items-center">
+          <div
+            ref={boardParent}
+            className="h-2/3 w-full md:h-full xl:w-[800px] lg:w-[700px] md:w-[520px]"
+          >
+            <DrawingBoard socket={socket} height={height} width={width} />
           </div>
           <div className="h-1/3 md:h-full flex flex-col w-full mt-2 md:mt-0 md:p-0 xl:w-[400px] lg:w-[320px] md:w-[250px]">
             <div className="w-full p-1 bg-green-900 text-white text-center text-xl font-semibold">
