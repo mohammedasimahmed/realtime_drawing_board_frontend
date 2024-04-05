@@ -20,6 +20,13 @@ const DrawingRoom = ({ roomid }) => {
     setValue("");
   };
 
+  function clearCanvas() {
+    const canvas = document.querySelector("canvas");
+    const context = canvas.getContext("2d");
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    socket.emit("clear_canvas", roomid);
+  }
+
   function handleResize() {
     if (boardParent.current) {
       setHeight(boardParent.current.offsetHeight);
@@ -31,6 +38,11 @@ const DrawingRoom = ({ roomid }) => {
     socket.emit("join_room", roomid);
     socket.on("receive_text", (txt) => {
       setChat((prevChats) => [...prevChats, txt]);
+    });
+    socket.on("canvas_clear", (roomid) => {
+      const canvas = document.querySelector("canvas");
+      const context = canvas.getContext("2d");
+      context.clearRect(0, 0, canvas.width, canvas.height);
     });
     if (boardParent.current) {
       setHeight(boardParent.current.offsetHeight);
@@ -82,6 +94,12 @@ const DrawingRoom = ({ roomid }) => {
               onClick={() => router.push("/")}
             >
               Leave Room
+            </button>
+            <button
+              className="text-white bg-green-700 text-xl p-2 rounded ml-1"
+              onClick={clearCanvas}
+            >
+              Clear Board
             </button>
           </div>
         </div>
